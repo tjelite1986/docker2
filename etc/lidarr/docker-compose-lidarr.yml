@@ -1,0 +1,34 @@
+services:
+  lidarr:
+    container_name: lidarr
+    image: lscr.io/linuxserver/lidarr:latest
+    restart: unless-stopped
+    networks:
+      - etc
+      - traefik
+    ports:
+      - 8686:8686
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+    volumes:
+      - $DATADIR/lidarr:/config
+      - $MUSICDIR:/music
+      - $DOWNLOADSDIR:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr-secure.rule=Host(`lidarr.$DOMAIN`)"
+      - "traefik.http.routers.lidarr-secure.entrypoints=https"
+      - "traefik.http.routers.lidarr-secure.tls=true"
+      - "traefik.http.routers.lidarr-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.lidarr-secure.service=lidarr-service"
+      - "traefik.http.services.lidarr-service.loadbalancer.server.port=8686"
+      - "traefik.http.routers.lidarr-secure.middlewares=sslheader@docker"
+
+networks:
+  etc:
+    external: true
+  traefik:
+    external: true

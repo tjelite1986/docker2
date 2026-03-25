@@ -1,0 +1,8 @@
+# Hemligheter och känsliga filer
+docs-secrets/
+**/.env
+**/.env.save
+traefik/acme.json
+
+# HA-tema (tredjepartsrepo, hör inte till stacken)
+ha/

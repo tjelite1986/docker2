@@ -1,0 +1,32 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - $DATADIR/ha:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /dev/serial/by-id:/dev/serial/by-id
+      - /mnt/media:/media
+      - /run/dbus:/run/dbus:rw
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyUSB1:/dev/ttyUSB1
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant-secure.rule=Host(`home.$DOMAIN`)"
+      - "traefik.http.routers.homeassistant-secure.entrypoints=https"
+      - "traefik.http.routers.homeassistant-secure.tls=true"
+      - "traefik.http.routers.homeassistant-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.homeassistant-secure.service=homeassistant-service"
+      - "traefik.http.services.homeassistant-service.loadbalancer.server.port=8123"
+      - "traefik.http.routers.homeassistant-secure.middlewares=sslheader@docker"

@@ -1,0 +1,37 @@
+http:
+  middlewares:
+    default-headers:
+      headers:
+        frameDeny: true
+        sslRedirect: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    default-whitelist:
+      ipAllowList:
+        sourceRange:
+          - "10.0.0.0/8"
+          - "192.168.0.0/16"
+          - "172.16.0.0/12"
+
+    # Endast tillåtna enheter (MAC → statisk IP via router-DHCP)
+    # 88:D7:F6:3D:F4:EE → 192.168.0.156
+    # 62:61:52:92:87:BA → 192.168.0.166
+    # 1A:0C:D0:DD:1B:91 → lägg till IP när enheten är online
+    traefik-dashboard-whitelist:
+      ipAllowList:
+        sourceRange:
+          - "192.168.0.0/24"
+
+    secured:
+      chain:
+        middlewares:
+          - default-whitelist
+          - default-headers

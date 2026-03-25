@@ -1,0 +1,18 @@
+services:
+  wyoming-faster-whisper:
+    image: rhasspy/wyoming-whisper
+    container_name: wyoming-faster-whisper
+    restart: unless-stopped
+    networks:
+      - smart_home
+    ports:
+      - "10300:10300"
+    command: --model small-int8 --language sv
+    environment:
+      - TZ=$TZ
+    volumes:
+      - $DATADIR/wyoming-faster-whisper:/data
+
+networks:
+  smart_home:
+    external: true

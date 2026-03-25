@@ -1,0 +1,34 @@
+services:
+  tidsrapport-demo:
+    image: ghcr.io/tjelite1986/tidsrapport:latest
+    container_name: tidsrapport-demo
+    restart: unless-stopped
+    networks:
+      - traefik
+    volumes:
+      - tidsrapport_demo_data:/app/data
+    environment:
+      - NEXTAUTH_SECRET=$TIDSRAPPORT_DEMO_SECRET
+      - NEXTAUTH_URL=https://demotidrapport.$DOMAIN
+      - DEMO_MODE=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tidsrapport-demo-secure.rule=Host(`demotidrapport.$DOMAIN`)"
+      - "traefik.http.routers.tidsrapport-demo-secure.entrypoints=https"
+      - "traefik.http.routers.tidsrapport-demo-secure.tls=true"
+      - "traefik.http.routers.tidsrapport-demo-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.tidsrapport-demo-secure.service=tidsrapport-demo-service"
+      - "traefik.http.services.tidsrapport-demo-service.loadbalancer.server.port=3000"
+      - "traefik.http.routers.tidsrapport-demo-secure.middlewares=sslheader@docker"
+      - "traefik.http.routers.tidsrapport-demo.rule=Host(`demotidrapport.$DOMAIN`)"
+      - "traefik.http.routers.tidsrapport-demo.entrypoints=http"
+      - "traefik.http.routers.tidsrapport-demo.middlewares=traefik-https-redirect@docker"
+
+volumes:
+  tidsrapport_demo_data:
+    external: true
+    name: tidsrapport_demo_data
+
+networks:
+  traefik:
+    external: true

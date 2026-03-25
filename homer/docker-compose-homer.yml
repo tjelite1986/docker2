@@ -1,0 +1,41 @@
+services:
+  homer:
+    image: b4bz/homer:latest
+    container_name: homer
+    restart: unless-stopped
+    volumes:
+      - /home/thomas/dockdata2/homer:/www/assets
+    networks:
+      - traefik
+      - nintendo_switch
+      - smart_home
+      - music
+      - torrents
+      - etc
+      - claude_build
+      - networks
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homer-secure.rule=Host(`homer.mecloud.win`)"
+      - "traefik.http.routers.homer-secure.entrypoints=https"
+      - "traefik.http.routers.homer-secure.tls=true"
+      - "traefik.http.routers.homer-secure.tls.certresolver=cloudflare"
+      - "traefik.http.services.homer-service.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
+  nintendo_switch:
+    external: true
+  smart_home:
+    external: true
+  music:
+    external: true
+  torrents:
+    external: true
+  etc:
+    external: true
+  claude_build:
+    external: true
+  networks:
+    external: true

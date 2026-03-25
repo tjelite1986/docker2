@@ -1,0 +1,61 @@
+services:
+  navidrome:
+    container_name: navidrome
+    image: deluan/navidrome:latest
+    restart: unless-stopped
+    networks:
+      - music
+      - traefik
+    ports:
+      - 4533:4533
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+      ND_CACHEFOLDER: "/cache"
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      ND_BASEURL: ""
+      ND_COVERJPEGQUALITY: 95
+      ND_ENABLECOVERANIMATION: false
+      ND_ENABLEDOWNLOADS: true
+      ND_ENABLEFAVOURITES: true
+      ND_ENABLELOGREDACTING: true
+      ND_ENABLEREPLAYGAIN: true
+      ND_ENABLESHARING: true
+      ND_ENABLESTARRATING: true
+      ND_JUKEBOX_ENABLED: true
+      ND_LASTFM_ENABLED: true
+      ND_LASTFM_APIKEY: "$ND_LASTFM_APIKEY"
+      ND_LASTFM_SECRET: "$ND_LASTFM_SECRET"
+      ND_LASTFM_LANGUAGE: "en"
+      ND_SPOTIFY_ID: "$ND_SPOTIFY_ID"
+      ND_SPOTIFY_SECRET: "$ND_SPOTIFY_SECRET"
+      ND_SMARTPLAYLISTREFRESHDELAY: "5s"
+      ND_SUBSONICARTISTPARTICIPATIONS: true
+      ND_UIWELCOMEMESSAGE: "Musicfy"
+      ND_ENABLEMEDIAFILECOVERART: "true"
+      ND_SCANNER_EXTRACTOR: "taglib"
+      ND_PLAYLISTSPATH: "/playlists"
+    volumes:
+      - $DATADIR/navidrome:/data
+      - $MUSICCACHE:/cache
+      - $MUSICDIR:/music:ro
+      - $MUSICPLAYLISTS:/playlists
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.navidrome-secure.rule=Host(`navidrome.$DOMAIN`)"
+      - "traefik.http.routers.navidrome-secure.entrypoints=https"
+      - "traefik.http.routers.navidrome-secure.tls=true"
+      - "traefik.http.routers.navidrome-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.navidrome-secure.service=navidrome-service"
+      - "traefik.http.services.navidrome-service.loadbalancer.server.port=4533"
+      - "traefik.http.routers.navidrome-secure.middlewares=sslheader@docker"
+
+networks:
+  music:
+    external: true
+  traefik:
+    external: true

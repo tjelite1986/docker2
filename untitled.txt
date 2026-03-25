@@ -1,0 +1,92 @@
+
+  - homer
+        docker-compose-homer.yml
+^  - traefik
+      acme.json
+      docker-compose-traefik.yml
+      config.yml
+      traefik.yml
+  - portainer
+      docker-compose-portainer.yml
+^  - sftp
+      docker-compose-sftp.yml
+      Dockerfile
+      entrypoint.sh
+    
+  - nintendo_switch
+      .env
+      docker-compose.yml
+      README.md
+    - aerofoil
+        docker-compose-aerofoil.yml
+    - transmission
+        docker-compose-transmission.yml
+    - prowlarr
+        docker-compose-prowlarr.yml
+    - flaresolverr
+        docker-compose-flaresolverr.yml
+
+  - smart-home
+    .env
+    docker-compose.yml
+    README.md
+    - homeassistant
+        docker-compose-homeassistant.yml
+        README.md
+    - musicassistant
+        docker-compose-musicassistant.yml
+    - matterserver
+        docker-compose-matterserver.yml
+    - mosquitto
+        docker-compose-mosquitto.yml
+    - wyoming-faster-whisper
+        docker-compose-wyoming-faster-whisper.yml
+    - wyoming-piper
+        docker-compose-wyoming-piper.yml
+  
+  - music
+    .env
+    docker-compose.yml
+    README.md
+    - navidrome
+        docker-compose-navidrome.yml
+    - beets
+        docker-compose-beets.yml
+    - metube
+        docker-compose-metube.yml
+        
+  - claude_build
+    .env
+    docker-compose.yml
+    README.md
+    - dashboard (app)
+    - elitetube (app)
+    - forsaljning (app)
+    - tidsrapport (app)
+    
+^  - torrent
+    .env
+    docker-compose.yml
+    README.md
+    - deluge
+        docker-compose-deluge.yml
+  - etc
+    .env
+    docker-compose.yml
+    README.md
+    - lidarr
+        docker-compose-lidarr.yml
+    - booklore
+        docker-compose-booklore.yml
+        
+  - networks
+    .env
+    docker-compose.yml
+    README.md
+    - netalertx
+        docker-compose-netalertx.yml
+    - watchyourlan
+        docker-compose-watchyourlan.yml
+  
+
+

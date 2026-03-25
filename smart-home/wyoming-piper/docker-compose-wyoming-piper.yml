@@ -1,0 +1,18 @@
+services:
+  wyoming-piper:
+    image: rhasspy/wyoming-piper
+    container_name: wyoming-piper
+    restart: unless-stopped
+    networks:
+      - smart_home
+    ports:
+      - "10200:10200"
+    command: --voice sv_SE-nst-medium
+    environment:
+      - TZ=$TZ
+    volumes:
+      - $DATADIR/wyoming-piper:/data
+
+networks:
+  smart_home:
+    external: true

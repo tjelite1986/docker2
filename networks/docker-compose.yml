@@ -1,0 +1,3 @@
+include:
+  - ./netalertx/docker-compose-netalertx.yml
+  # - ./watchyourlan/docker-compose-watchyourlan.yml

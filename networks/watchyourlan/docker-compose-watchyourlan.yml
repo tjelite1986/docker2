@@ -1,0 +1,11 @@
+services:
+  wyl:
+    image: ghcr.io/aceberg/watchyourlan
+    container_name: watchyourlan
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - $DATADIR/watchyourlan:/data/WatchYourLAN
+    environment:
+      TZ: $TZ
+      IFACES: "eth0"

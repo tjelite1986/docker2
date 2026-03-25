@@ -1,0 +1,37 @@
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+      USER: $TRANSMISSION_USER
+      PASS: $TRANSMISSION_PASS
+    volumes:
+      - $DATADIR/transmission:/config
+      - /mnt/4tb/downloads/aerofoil:/downloads
+      - /mnt/4tb/nintendo/games:/watch
+    networks:
+      - nintendo_switch
+      - traefik
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.transmission-secure.rule=Host(`torrent.$DOMAIN`)"
+      - "traefik.http.routers.transmission-secure.entrypoints=https"
+      - "traefik.http.routers.transmission-secure.tls=true"
+      - "traefik.http.routers.transmission-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.transmission-secure.service=transmission-service"
+      - "traefik.http.services.transmission-service.loadbalancer.server.port=9091"
+      - "traefik.http.routers.transmission-secure.middlewares=sslheader@docker"
+
+networks:
+  nintendo_switch:
+    external: true
+  traefik:
+    external: true

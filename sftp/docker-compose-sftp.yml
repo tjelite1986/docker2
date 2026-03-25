@@ -1,0 +1,55 @@
+services:
+  sftp:
+    container_name: sftp
+    build: .
+    restart: unless-stopped
+    ports:
+      - "2222:22"
+    environment:
+      SFTP_USER: $SFTP_USER
+      SFTP_PASS: $SFTP_PASS
+    volumes:
+      - /home/thomas/docker2:/home/$SFTP_USER/Docker
+      - /home/thomas/dockdata2:/home/$SFTP_USER/Dockdata
+      - /home/thomas/appbuilds:/home/$SFTP_USER/Appbuilds
+      - /home/thomas/projekt:/home/$SFTP_USER/Claude_Files
+      - /mnt/4tb/APK:/home/$SFTP_USER/APK_Files
+      - /mnt/4tb/TikTok:/home/$SFTP_USER/TikTok_Videos
+      - /mnt/4tb/adults:/home/$SFTP_USER/A_Videos
+      - /mnt/4tb/downloads:/home/$SFTP_USER/Downloads
+      - /mnt/4tb/music/files:/home/$SFTP_USER/Music
+      - /mnt/4tb/nintendo/games:/home/$SFTP_USER/Nintendo_Games
+      - /mnt/4tb/nintendo/software:/home/$SFTP_USER/Nintendo_Software
+      - /mnt/4tb/nintendo/modding:/home/$SFTP_USER/Nintendo_Modding
+      - /mnt/4tb/roms:/home/$SFTP_USER/Games_Roms
+      - /:/home/$SFTP_USER/Root
+
+  samba:
+    image: dperson/samba:latest
+    container_name: samba
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Stockholm
+    ports:
+      - "445:445"
+    command: >
+      -u "${SFTP_USER};${SFTP_PASS}"
+      -s "Docker;/mnt/docker;yes;no;no;${SFTP_USER}"
+      -s "Downloads;/mnt/downloads;yes;no;no;${SFTP_USER}"
+      -s "Music;/mnt/music;yes;no;no;${SFTP_USER}"
+      -s "Nintendo_Games;/mnt/nintendo/games;yes;no;no;${SFTP_USER}"
+      -s "Nintendo_Software;/mnt/nintendo/software;yes;no;no;${SFTP_USER}"
+      -s "Nintendo_Modding;/mnt/nintendo/modding;yes;no;no;${SFTP_USER}"
+      -s "Dockdata;/mnt/dockdata;yes;no;no;${SFTP_USER}"
+      -s "Appbuilds;/mnt/appbuilds;yes;no;no;${SFTP_USER}"
+      -s "Roms;/mnt/roms;yes;no;no;${SFTP_USER}"
+    volumes:
+      - /home/thomas/docker2:/mnt/docker
+      - /home/thomas/dockdata2:/mnt/dockdata
+      - /home/thomas/appbuilds:/mnt/appbuilds
+      - /mnt/4tb/downloads:/mnt/downloads
+      - /mnt/4tb/music/files:/mnt/music
+      - /mnt/4tb/nintendo/games:/mnt/nintendo/games
+      - /mnt/4tb/nintendo/software:/mnt/nintendo/software
+      - /mnt/4tb/nintendo/modding:/mnt/nintendo/modding
+      - /mnt/4tb/roms:/mnt/roms

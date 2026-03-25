@@ -1,0 +1,11 @@
+services:
+  matter-server:
+    image: ghcr.io/matter-js/python-matter-server:stable
+    container_name: matter-server
+    restart: unless-stopped
+    network_mode: host
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - $DATADIR/matter-server/data:/data/
+      - /run/dbus:/run/dbus:ro

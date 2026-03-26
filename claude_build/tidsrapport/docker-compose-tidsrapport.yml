@@ -1,6 +1,6 @@
 services:
   tidsrapport:
-    image: ghcr.io/tjelite1986/tidsrapport:latest
+    image: $TIDSRAPPORT_IMAGE
     container_name: tidsrapport
     restart: unless-stopped
     networks:

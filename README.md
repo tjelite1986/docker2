@@ -45,7 +45,7 @@ Strukturerad som separata stackar per kategori — varje mapp är en självstän
 ### 1. Klona repot
 
 ```bash
-git clone https://github.com/tjelite1986/docker2.git ~/docker2
+git clone https://github.com/yourusername/docker2.git ~/docker2
 cd ~/docker2
 ```
 

@@ -21,10 +21,7 @@ http:
           - "192.168.0.0/16"
           - "172.16.0.0/12"
 
-    # Endast tillåtna enheter (MAC → statisk IP via router-DHCP)
-    # 88:D7:F6:3D:F4:EE → 192.168.0.156
-    # 62:61:52:92:87:BA → 192.168.0.166
-    # 1A:0C:D0:DD:1B:91 → lägg till IP när enheten är online
+    # Lägg till specifika enheter via statisk DHCP i routern
     traefik-dashboard-whitelist:
       ipAllowList:
         sourceRange:

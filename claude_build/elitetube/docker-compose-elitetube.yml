@@ -1,6 +1,6 @@
 services:
   elitetube:
-    image: ghcr.io/tjelite1986/elitetube:sha-817435d
+    image: $ELITETUBE_IMAGE
     container_name: elitetube
     restart: unless-stopped
     networks:

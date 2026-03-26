@@ -82,8 +82,8 @@ Globala variabler som återanvänds i alla stacks:
 | PUID | 1000 |
 | PGID | 1000 |
 | TZ | Europe/Stockholm |
-| DOMAIN | mecloud.win |
-| DATADIR | /home/thomas/dockdata |
+| DOMAIN | yourdomain.com |
+| DATADIR | /home/youruser/dockdata |
 
 ## Konventioner
 
@@ -99,7 +99,7 @@ Globala variabler som återanvänds i alla stacks:
 ```yaml
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.<app>-secure.rule=Host(`<sub>.mecloud.win`)"
+  - "traefik.http.routers.<app>-secure.rule=Host(`<sub>.$DOMAIN`)"
   - "traefik.http.routers.<app>-secure.entrypoints=https"
   - "traefik.http.routers.<app>-secure.tls=true"
   - "traefik.http.routers.<app>-secure.tls.certresolver=cloudflare"
@@ -110,6 +110,6 @@ labels:
 ## Servermiljö
 
 - **Host**: Raspberry Pi, arm64, Linux 6.8.0-raspi
-- **Host IP**: 192.168.0.143
+- **Host IP**: your-server-ip
 - **Node**: v18.19.1
 - **Docker**: v29.2.1 / docker compose v5.0.2

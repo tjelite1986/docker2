@@ -23,8 +23,8 @@ services:
     volumes:
       - $DATADIR/aerofoil/config:/app/config
       - $DATADIR/aerofoil/data:/app/data
-      - /mnt/4tb/nintendo/games:/games
-      - /mnt/4tb/downloads/aerofoil:/downloads
+      - $NINTENDO_GAMES_DIR:/games
+      - $AEROFOIL_DOWNLOADS_DIR:/downloads
       - /etc/localtime:/etc/localtime:ro
     labels:
       - "traefik.enable=true"

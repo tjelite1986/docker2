@@ -4,7 +4,7 @@ services:
     container_name: wyoming-faster-whisper
     restart: unless-stopped
     networks:
-      - smart_home
+      - traefik
     ports:
       - "10300:10300"
     command: --model small-int8 --language sv
@@ -14,5 +14,5 @@ services:
       - $DATADIR/wyoming-faster-whisper:/data
 
 networks:
-  smart_home:
+  traefik:
     external: true

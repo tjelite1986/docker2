@@ -4,7 +4,7 @@ services:
     container_name: wyoming-piper
     restart: unless-stopped
     networks:
-      - smart_home
+      - traefik
     ports:
       - "10200:10200"
     command: --voice sv_SE-nst-medium
@@ -14,5 +14,5 @@ services:
       - $DATADIR/wyoming-piper:/data
 
 networks:
-  smart_home:
+  traefik:
     external: true

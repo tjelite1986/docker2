@@ -7,10 +7,10 @@ services:
       LOG_LEVEL: info
       TZ: $TZ
     networks:
-      - nintendo_switch
+      - traefik
     ports:
       - 8191:8191
 
 networks:
-  nintendo_switch:
+  traefik:
     external: true

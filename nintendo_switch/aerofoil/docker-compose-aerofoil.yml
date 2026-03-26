@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     hostname: aerofoil
     networks:
-      - nintendo_switch
       - traefik
     ports:
       - 8465:8465
@@ -37,7 +36,5 @@ services:
       - "traefik.http.routers.aerofoil-secure.middlewares=sslheader@docker"
 
 networks:
-  nintendo_switch:
-    external: true
   traefik:
     external: true

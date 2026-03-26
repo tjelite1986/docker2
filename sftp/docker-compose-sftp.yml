@@ -3,6 +3,8 @@ services:
     container_name: sftp
     build: .
     restart: unless-stopped
+    networks:
+      - traefik
     ports:
       - "2222:22"
     environment:
@@ -23,6 +25,8 @@ services:
     image: dperson/samba:latest
     container_name: samba
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
       - TZ=Europe/Stockholm
     ports:
@@ -36,7 +40,6 @@ services:
       -s "Nintendo_Software;/mnt/nintendo/software;yes;no;no;${SFTP_USER}"
       -s "Dockdata;/mnt/dockdata;yes;no;no;${SFTP_USER}"
       -s "Appbuilds;/mnt/appbuilds;yes;no;no;${SFTP_USER}"
-      # Lägg till egna delade mappar här
     volumes:
       - /home/thomas/docker2:/mnt/docker
       - /home/thomas/dockdata2:/mnt/dockdata
@@ -46,3 +49,7 @@ services:
       - /mnt/4tb/nintendo/games:/mnt/nintendo/games
       - /mnt/4tb/nintendo/software:/mnt/nintendo/software
       # Lägg till egna volymer här
+
+networks:
+  traefik:
+    external: true

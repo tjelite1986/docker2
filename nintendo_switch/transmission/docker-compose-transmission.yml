@@ -14,7 +14,6 @@ services:
       - /mnt/4tb/downloads/aerofoil:/downloads
       - /mnt/4tb/nintendo/games:/watch
     networks:
-      - nintendo_switch
       - traefik
     ports:
       - 9091:9091
@@ -31,7 +30,5 @@ services:
       - "traefik.http.routers.transmission-secure.middlewares=sslheader@docker"
 
 networks:
-  nintendo_switch:
-    external: true
   traefik:
     external: true

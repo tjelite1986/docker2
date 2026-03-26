@@ -7,8 +7,5 @@ include:
   - ./wyoming-piper/docker-compose-wyoming-piper.yml
 
 networks:
-  smart_home:
-    name: smart_home
-    driver: bridge
   traefik:
     external: true

@@ -1,0 +1,43 @@
+services:
+  aerofoil:
+    container_name: aerofoil
+    image: luketanti/aerofoil:latest
+    restart: unless-stopped
+    hostname: aerofoil
+    networks:
+      - nintendo_switch
+      - traefik
+    ports:
+      - 8465:8465
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+      USER_ADMIN_NAME: $AEROFOIL_ADMIN_NAME
+      USER_ADMIN_PASSWORD: $AEROFOIL_ADMIN_PASSWORD
+      USER_GUEST_NAME: $AEROFOIL_GUEST_NAME
+      USER_GUEST_PASSWORD: $AEROFOIL_GUEST_PASSWORD
+      AEROFOIL_SECRET_KEY: $AEROFOIL_SECRET_KEY
+      AEROFOIL_TRUST_PROXY_HEADERS: "true"
+      AEROFOIL_TRUSTED_PROXIES: "10.0.0.0/21"
+    volumes:
+      - $DATADIR/aerofoil/config:/app/config
+      - $DATADIR/aerofoil/data:/app/data
+      - $NINTENDO_GAMES_DIR:/games
+      - $AEROFOIL_DOWNLOADS_DIR:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aerofoil-secure.rule=Host(`eshop.$DOMAIN`)"
+      - "traefik.http.routers.aerofoil-secure.entrypoints=https"
+      - "traefik.http.routers.aerofoil-secure.tls=true"
+      - "traefik.http.routers.aerofoil-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.aerofoil-secure.service=aerofoil-service"
+      - "traefik.http.services.aerofoil-service.loadbalancer.server.port=8465"
+      - "traefik.http.routers.aerofoil-secure.middlewares=sslheader@docker"
+
+networks:
+  nintendo_switch:
+    external: true
+  traefik:
+    external: true

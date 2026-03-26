@@ -1,0 +1,34 @@
+http:
+  middlewares:
+    default-headers:
+      headers:
+        frameDeny: true
+        sslRedirect: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    default-whitelist:
+      ipAllowList:
+        sourceRange:
+          - "10.0.0.0/8"
+          - "192.168.0.0/16"
+          - "172.16.0.0/12"
+
+    # Lägg till specifika enheter via statisk DHCP i routern
+    traefik-dashboard-whitelist:
+      ipAllowList:
+        sourceRange:
+          - "192.168.0.0/24"
+
+    secured:
+      chain:
+        middlewares:
+          - default-whitelist
+          - default-headers

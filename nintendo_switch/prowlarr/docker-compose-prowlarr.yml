@@ -1,0 +1,31 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+    volumes:
+      - $DATADIR/prowlarr:/config
+    networks:
+      - nintendo_switch
+      - traefik
+    ports:
+      - 9696:9696
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr-secure.rule=Host(`prowlarr.$DOMAIN`)"
+      - "traefik.http.routers.prowlarr-secure.entrypoints=https"
+      - "traefik.http.routers.prowlarr-secure.tls=true"
+      - "traefik.http.routers.prowlarr-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.prowlarr-secure.service=prowlarr-service"
+      - "traefik.http.services.prowlarr-service.loadbalancer.server.port=9696"
+      - "traefik.http.routers.prowlarr-secure.middlewares=sslheader@docker"
+
+networks:
+  nintendo_switch:
+    external: true
+  traefik:
+    external: true

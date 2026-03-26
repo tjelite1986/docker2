@@ -1,0 +1,12 @@
+include:
+  - ./aerofoil/docker-compose-aerofoil.yml
+  - ./transmission/docker-compose-transmission.yml
+  - ./prowlarr/docker-compose-prowlarr.yml
+  - ./flaresolverr/docker-compose-flaresolverr.yml
+
+networks:
+  nintendo_switch:
+    name: nintendo_switch
+    driver: bridge
+  traefik:
+    external: true

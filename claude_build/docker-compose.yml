@@ -1,0 +1,12 @@
+include:
+  - ./elitetube/docker-compose-elitetube.yml
+  - ./tidsrapport/docker-compose-tidsrapport.yml
+  # - ./dashboard/docker-compose-dashboard.yml    # ej public än
+  # - ./forsaljning/docker-compose-forsaljning.yml # ej public än
+
+networks:
+  claude_build:
+    name: claude_build
+    driver: bridge
+  traefik:
+    external: true

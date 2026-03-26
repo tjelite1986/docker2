@@ -1,0 +1,36 @@
+services:
+  tidsrapport:
+    container_name: tidsrapport
+    build:
+      context: /home/thomas/projekt/tidsrapport
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - traefik
+    volumes:
+      - tidsrapport_data:/app/data
+    environment:
+      - NEXTAUTH_SECRET=$TIDSRAPPORT_SECRET
+      - NEXTAUTH_URL=https://tidrapport.$DOMAIN
+      - ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tidsrapport-secure.rule=Host(`tidrapport.$DOMAIN`)"
+      - "traefik.http.routers.tidsrapport-secure.entrypoints=https"
+      - "traefik.http.routers.tidsrapport-secure.tls=true"
+      - "traefik.http.routers.tidsrapport-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.tidsrapport-secure.service=tidsrapport-service"
+      - "traefik.http.services.tidsrapport-service.loadbalancer.server.port=3000"
+      - "traefik.http.routers.tidsrapport-secure.middlewares=sslheader@docker"
+      - "traefik.http.routers.tidsrapport.rule=Host(`tidrapport.$DOMAIN`)"
+      - "traefik.http.routers.tidsrapport.entrypoints=http"
+      - "traefik.http.routers.tidsrapport.middlewares=traefik-https-redirect@docker"
+
+volumes:
+  tidsrapport_data:
+    external: true
+    name: tidsrapport_data
+
+networks:
+  traefik:
+    external: true

@@ -1,0 +1,68 @@
+services:
+  booklore:
+    image: booklore/booklore:latest
+    container_name: booklore
+    restart: unless-stopped
+    depends_on:
+      booklore-db:
+        condition: service_healthy
+    networks:
+      - etc
+      - traefik
+    environment:
+      - USER_ID=${PUID}
+      - GROUP_ID=${PGID}
+      - TZ=${TZ}
+      - DATABASE_URL=jdbc:mariadb://booklore-db:3306/booklore
+      - DATABASE_USERNAME=booklore
+      - DATABASE_PASSWORD=${BOOKLORE_DB_PASSWORD}
+      - SWAGGER_ENABLED=false
+      - FORCE_DISABLE_OIDC=false
+    volumes:
+      - ${DATADIR}/booklore/data:/app/data
+      - ${DATADIR}/booklore/books:/books
+      - ${DATADIR}/booklore/bookdrop:/bookdrop
+      - /mnt/4tb/books/disney:/books/disney
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.booklore-secure.rule=Host(`books.$DOMAIN`)"
+      - "traefik.http.routers.booklore-secure.entrypoints=https"
+      - "traefik.http.routers.booklore-secure.tls=true"
+      - "traefik.http.routers.booklore-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.booklore-secure.service=booklore-service"
+      - "traefik.http.services.booklore-service.loadbalancer.server.port=6060"
+      - "traefik.http.routers.booklore-secure.middlewares=sslheader@docker"
+    healthcheck:
+      test: wget -q -O - http://localhost:6060/api/v1/healthcheck
+      interval: 60s
+      retries: 5
+      start_period: 60s
+      timeout: 10s
+
+  booklore-db:
+    image: lscr.io/linuxserver/mariadb:11.4.8
+    container_name: booklore-db
+    restart: unless-stopped
+    networks:
+      - etc
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - MYSQL_ROOT_PASSWORD=${BOOKLORE_DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=booklore
+      - MYSQL_USER=booklore
+      - MYSQL_PASSWORD=${BOOKLORE_DB_PASSWORD}
+    volumes:
+      - ${DATADIR}/booklore/mariadb:/config
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  etc:
+    external: true
+  traefik:
+    external: true

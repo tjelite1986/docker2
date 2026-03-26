@@ -1,0 +1,25 @@
+services:
+  musicassistant:
+    image: ghcr.io/music-assistant/server:latest
+    container_name: musicassistant
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - SYS_ADMIN
+      - DAC_READ_SEARCH
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - $DATADIR/musicassistant/data:/data/
+      - /mnt/media:/media
+    environment:
+      - LOG_LEVEL=info
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.musicassistant-secure.rule=Host(`musicassistant.$DOMAIN`)"
+      - "traefik.http.routers.musicassistant-secure.entrypoints=https"
+      - "traefik.http.routers.musicassistant-secure.tls=true"
+      - "traefik.http.routers.musicassistant-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.musicassistant-secure.service=musicassistant-service"
+      - "traefik.http.services.musicassistant-service.loadbalancer.server.port=8095"
+      - "traefik.http.routers.musicassistant-secure.middlewares=sslheader@docker"

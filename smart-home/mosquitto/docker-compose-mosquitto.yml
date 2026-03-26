@@ -1,0 +1,26 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: unless-stopped
+    networks:
+      - smart_home
+      - traefik
+    ports:
+      - "1883:1883"
+    environment:
+      - TZ=$TZ
+    volumes:
+      - $DATADIR/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+
+networks:
+  smart_home:
+    external: true
+  traefik:
+    external: true
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:

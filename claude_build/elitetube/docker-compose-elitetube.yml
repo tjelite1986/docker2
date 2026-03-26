@@ -1,0 +1,35 @@
+services:
+  elitetube:
+    image: $ELITETUBE_IMAGE
+    container_name: elitetube
+    restart: unless-stopped
+    networks:
+      - claude_build
+      - traefik
+    volumes:
+      - elitetube_data:/app/data
+      - /mnt/media:/media
+    environment:
+      - NEXTAUTH_SECRET=${ELITETUBE_SECRET}
+      - NEXTAUTH_URL=https://tube.${DOMAIN}
+      - DATABASE_PATH=/app/data/elitetube.db
+      - ADMIN_PASSWORD=${ELITETUBE_ADMIN_PASSWORD}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.elitetube-secure.rule=Host(`tube.$DOMAIN`)"
+      - "traefik.http.routers.elitetube-secure.entrypoints=https"
+      - "traefik.http.routers.elitetube-secure.tls=true"
+      - "traefik.http.routers.elitetube-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.elitetube-secure.service=elitetube-service"
+      - "traefik.http.services.elitetube-service.loadbalancer.server.port=3001"
+      - "traefik.http.routers.elitetube-secure.middlewares=sslheader@docker"
+
+networks:
+  claude_build:
+    external: true
+  traefik:
+    external: true
+
+volumes:
+  elitetube_data:
+    name: elitetube_data

@@ -1,0 +1,57 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    networks:
+      - traefik
+      - nintendo_switch
+      - smart_home
+      - music
+      - torrents
+      - etc
+      - claude_build
+      - networks
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 80:80
+      - 8080:8080
+      - 443:443
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - CF_API_EMAIL=$CF_API_EMAIL
+      - CF_DNS_API_TOKEN=$CF_DNS_API_TOKEN
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - /etc/localtime:/etc/localtime:ro
+      - $DOCKERDIR/traefik/traefik.yml:/traefik.yml:ro
+      - $DOCKERDIR/traefik/acme.json:/acme.json
+      - $DOCKERDIR/traefik/config.yml:/config.yml:ro
+      - $DOCKERDIR/logs/traefik:/var/log/traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=$DOMAIN"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.$DOMAIN"
+
+networks:
+  traefik:
+    external: true
+  nintendo_switch:
+    external: true
+  smart_home:
+    external: true
+  music:
+    external: true
+  torrents:
+    external: true
+  etc:
+    external: true
+  claude_build:
+    external: true
+  networks:
+    external: true

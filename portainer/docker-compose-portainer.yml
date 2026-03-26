@@ -1,0 +1,30 @@
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:lts
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - $NETWORKS
+    ports:
+      - 9443:9443
+#      - 8000:8000  # Ta bort om Edge Agents inte används
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.$DOMAIN`)"
+      - "traefik.http.routers.portainer-secure.entrypoints=https"
+      - "traefik.http.routers.portainer-secure.tls=true"
+      - "traefik.http.routers.portainer-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.portainer-secure.service=portainer-service"
+      - "traefik.http.services.portainer-service.loadbalancer.server.port=9000"
+      - "traefik.http.routers.portainer-secure.middlewares=sslheader@docker"
+
+volumes:
+  portainer_data:
+    name: portainer_data
+
+networks:
+  traefik:
+    external: true

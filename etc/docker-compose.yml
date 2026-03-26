@@ -1,0 +1,10 @@
+include:
+  - ./lidarr/docker-compose-lidarr.yml
+  - ./booklore/docker-compose-booklore.yml
+
+networks:
+  etc:
+    name: etc
+    driver: bridge
+  traefik:
+    external: true

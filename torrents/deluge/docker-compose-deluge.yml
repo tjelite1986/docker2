@@ -1,0 +1,36 @@
+services:
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    restart: unless-stopped
+    networks:
+      - torrents
+      - traefik
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+      - 58846:58846
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+      DELUGE_LOGLEVEL: error
+    volumes:
+      - $DATADIR/deluge:/config
+      - /mnt/4tb/downloads/torrents:/downloads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.deluge-secure.rule=Host(`deluge.$DOMAIN`)"
+      - "traefik.http.routers.deluge-secure.entrypoints=https"
+      - "traefik.http.routers.deluge-secure.tls=true"
+      - "traefik.http.routers.deluge-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.deluge-secure.service=deluge-service"
+      - "traefik.http.services.deluge-service.loadbalancer.server.port=8112"
+      - "traefik.http.routers.deluge-secure.middlewares=sslheader@docker"
+
+networks:
+  torrents:
+    external: true
+  traefik:
+    external: true

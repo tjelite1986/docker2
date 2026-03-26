@@ -1,0 +1,11 @@
+include:
+  - ./navidrome/docker-compose-navidrome.yml
+  - ./beets/docker-compose-beets.yml
+  - ./metube/docker-compose-metube.yml
+
+networks:
+  music:
+    name: music
+    driver: bridge
+  traefik:
+    external: true

@@ -1,0 +1,7 @@
+services:
+  ha-google-home-get-token:
+    build: .
+    image: ha-google-home-get-token:local
+    container_name: ha-google-home-get-token
+    stdin_open: true   # -i
+    tty: true          # -t

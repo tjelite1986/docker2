@@ -1,0 +1,9 @@
+include:
+  - ./deluge/docker-compose-deluge.yml
+
+networks:
+  torrents:
+    name: torrents
+    driver: bridge
+  traefik:
+    external: true

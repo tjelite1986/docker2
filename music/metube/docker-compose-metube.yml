@@ -1,0 +1,38 @@
+services:
+  metube:
+    container_name: metube
+    image: ghcr.io/alexta69/metube
+    restart: unless-stopped
+    networks:
+      - music
+      - traefik
+    ports:
+      - 8084:8081
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+      UMASK: '002'
+      DARK_MODE: 'true'
+      DOWNLOAD_DIR: '/downloads'
+      AUDIO_DOWNLOAD_DIR: '/downloads/mp3'
+      OUTPUT_TEMPLATE: '%(artist|uploader)s - %(title)s.%(ext)s'
+      OUTPUT_TEMPLATE_PLAYLIST: '%(artist|uploader)s - %(title)s.%(ext)s'
+      YTDL_OPTIONS: '{"writethumbnail":true,"postprocessors":[{"key":"FFmpegMetadata","add_chapters":true,"add_metadata":true},{"key":"EmbedThumbnail","already_have_thumbnail":false}]}'
+    volumes:
+      - $DOWNLOADSDIR:/downloads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.metube-secure.rule=Host(`metube.$DOMAIN`)"
+      - "traefik.http.routers.metube-secure.entrypoints=https"
+      - "traefik.http.routers.metube-secure.tls=true"
+      - "traefik.http.routers.metube-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.metube-secure.service=metube-service"
+      - "traefik.http.services.metube-service.loadbalancer.server.port=8081"
+      - "traefik.http.routers.metube-secure.middlewares=sslheader@docker"
+
+networks:
+  music:
+    external: true
+  traefik:
+    external: true

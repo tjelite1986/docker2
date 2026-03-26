@@ -4,7 +4,6 @@ services:
     container_name: deluge
     restart: unless-stopped
     networks:
-      - torrents
       - traefik
     ports:
       - 8112:8112
@@ -30,7 +29,5 @@ services:
       - "traefik.http.routers.deluge-secure.middlewares=sslheader@docker"
 
 networks:
-  torrents:
-    external: true
   traefik:
     external: true

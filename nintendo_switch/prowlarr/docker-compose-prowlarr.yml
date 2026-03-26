@@ -10,7 +10,6 @@ services:
     volumes:
       - $DATADIR/prowlarr:/config
     networks:
-      - nintendo_switch
       - traefik
     ports:
       - 9696:9696
@@ -25,7 +24,5 @@ services:
       - "traefik.http.routers.prowlarr-secure.middlewares=sslheader@docker"
 
 networks:
-  nintendo_switch:
-    external: true
   traefik:
     external: true

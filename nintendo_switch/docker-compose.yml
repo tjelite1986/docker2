@@ -5,8 +5,5 @@ include:
   - ./flaresolverr/docker-compose-flaresolverr.yml
 
 networks:
-  nintendo_switch:
-    name: nintendo_switch
-    driver: bridge
   traefik:
     external: true

@@ -1,0 +1,29 @@
+services:
+  mcp-server:
+    image: node:18-alpine
+    container_name: mcp-server
+    restart: unless-stopped
+    command: >
+      sh -c "npx -y supergateway
+      --stdio 'npx -y @modelcontextprotocol/server-filesystem /workspace'
+      --port 3000
+      --cors"
+    volumes:
+      - /home/thomas/docker2:/workspace/docker2:rw
+      - /home/thomas/dockdata2:/workspace/dockdata2:rw
+      - /home/thomas/code:/workspace/code:rw
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-secure.rule=Host(`mcp.$DOMAIN`)"
+      - "traefik.http.routers.mcp-secure.entrypoints=https"
+      - "traefik.http.routers.mcp-secure.tls=true"
+      - "traefik.http.routers.mcp-secure.tls.certresolver=cloudflare"
+      - "traefik.http.services.mcp-service.loadbalancer.server.port=3000"
+      - "traefik.http.routers.mcp-secure.middlewares=mcp-auth@docker,sslheader@docker"
+      - "traefik.http.middlewares.mcp-auth.basicauth.users=${MCP_BASIC_AUTH}"
+
+networks:
+  traefik:
+    external: true

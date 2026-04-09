@@ -4,7 +4,6 @@ services:
     container_name: tidsrapport
     restart: unless-stopped
     networks:
-      - claude_build
       - traefik
     volumes:
       - tidsrapport_data:/app/data
@@ -23,8 +22,6 @@ services:
       - "traefik.http.routers.tidsrapport-secure.middlewares=sslheader@docker"
 
 networks:
-  claude_build:
-    external: true
   traefik:
     external: true
 

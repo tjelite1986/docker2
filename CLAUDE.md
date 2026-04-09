@@ -113,3 +113,129 @@ labels:
 - **Host IP**: your-server-ip
 - **Node**: v18.19.1
 - **Docker**: v29.2.1 / docker compose v5.0.2
+
+---
+
+# Docker Development
+
+Aktiveras vid: Dockerfile-optimering, docker-compose-konfiguration, multi-stage builds, container-säkerhet, image-storlek.
+
+## Proaktiva varningsflaggor
+
+Flagga alltid utan att bli tillfrågad om:
+- `:latest`-tag → föreslå pinning till specifik version
+- Ingen `.dockerignore` → skapa en (minst: `.git`, `node_modules`, `.env`)
+- `COPY . .` före dependency-installation → cache-bust, omordna
+- Körs som root → lägg till `USER`-instruktion, inga undantag i produktion
+- Secrets i `ENV`/`ARG` → använd BuildKit secret mounts
+- Image över 1GB → multi-stage build krävs
+- Ingen `HEALTHCHECK` → lägg till en
+
+## Multi-stage build: Node.js/TypeScript (arm64)
+
+```dockerfile
+FROM node:18-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --production=false
+
+FROM deps AS builder
+COPY . .
+RUN npm run build
+
+FROM node:18-alpine
+WORKDIR /app
+RUN addgroup -g 1001 -S appgroup && adduser -S appuser -u 1001
+COPY --from=builder /app/dist ./dist
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json ./
+USER appuser
+EXPOSE 3000
+CMD ["node", "dist/index.js"]
+```
+
+**OBS:** Node-version i Docker MÅSTE matcha host (`node --version` = v18.19.1) annars kraschar nativa moduler (better-sqlite3) med `ERR_DLOPEN_FAILED`.
+
+## Layer-optimering
+
+```
+ORDNING (minst-föränderligt först):
+1. Base image
+2. System-dependencies (apt/apk)
+3. Package.json + npm install
+4. Källkod (COPY . .)
+
+Kombinera RUN-kommandon:
+RUN apt-get update && apt-get install -y pkg && rm -rf /var/lib/apt/lists/*
+```
+
+## Compose best practices
+
+```yaml
+services:
+  app:
+    image: myapp:1.2.3          # Aldrig :latest i produktion
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    env_file: .env              # Secrets i env_file, inte inline environment
+    networks:
+      - internal
+      - traefik
+
+networks:
+  internal:
+    name: projectname
+    driver: bridge
+  traefik:
+    external: true
+```
+
+## Säkerhetsaudit-checklista
+
+| Check | Allvarlighet | Fix |
+|---|---|---|
+| Körs som root | Kritisk | `USER nonroot` |
+| `:latest`-tag | Hög | Pinna version |
+| Secrets i ENV/ARG | Kritisk | BuildKit secret mounts |
+| Ingen HEALTHCHECK | Medium | Lägg till |
+| `--privileged` | Hög | Undvik, droppa capabilities |
+| apt-cache kvar | Låg | `rm -rf /var/lib/apt/lists/*` i samma RUN |
+
+---
+
+# Env & Secrets Manager
+
+Aktiveras vid: .env-filer, secrets-hantering, credential-rotation, säkerhetsaudit av config-filer.
+
+## Rekommenderat flöde
+
+1. Scanna repo efter läckage innan push
+2. Prioritera `critical` och `high` först
+3. Rotera riktiga credentials och ta bort exponerade värden
+4. Uppdatera `.env.example` och `.gitignore`
+
+## Best practices
+
+- Använd `.env.example` med platshållare — aldrig riktiga värden
+- `.env` alltid i `.gitignore`
+- Variabel-substitution: `${VAR:-default}`
+- Dokumentera alla obligatoriska variabler i `.env.example`
+
+## Vanliga fallgropar
+
+- Committa riktiga värden i `.env.example`
+- Rotera en tjänst men missa downstream-konsumenter
+- Logga secrets under felsökning
+- Behandla misstänkta läckage som låg prioritet
+
+## Emergency rotation
+
+1. Återkalla omedelbart hos providern
+2. Generera och driftsätt ny credential till alla konsumenter
+3. Granska access-loggar för obehörig användning
+4. Scanna git-historik och CI-loggar efter det exponerade värdet
+5. Dokumentera scope, tidslinje och åtgärder

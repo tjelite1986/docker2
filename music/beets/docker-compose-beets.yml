@@ -4,7 +4,6 @@ services:
     image: lscr.io/linuxserver/beets:latest
     restart: "no"
     networks:
-      - music
       - traefik
     ports:
       - 8337:8337
@@ -27,7 +26,5 @@ services:
       - "traefik.http.routers.beets-secure.middlewares=sslheader@docker"
 
 networks:
-  music:
-    external: true
   traefik:
     external: true

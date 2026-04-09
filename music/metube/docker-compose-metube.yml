@@ -4,7 +4,6 @@ services:
     image: ghcr.io/alexta69/metube
     restart: unless-stopped
     networks:
-      - music
       - traefik
     ports:
       - 8084:8081
@@ -32,7 +31,5 @@ services:
       - "traefik.http.routers.metube-secure.middlewares=sslheader@docker"
 
 networks:
-  music:
-    external: true
   traefik:
     external: true

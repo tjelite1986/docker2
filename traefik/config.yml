@@ -32,3 +32,172 @@ http:
         middlewares:
           - default-whitelist
           - default-headers
+
+  routers:
+    homer-k3s:
+      rule: "Host(`homer.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: homer-k3s
+    deluge-k3s:
+      rule: "Host(`deluge.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: deluge-k3s
+    navidrome-k3s:
+      rule: "Host(`navidrome.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: navidrome-k3s
+    aerofoil-k3s:
+      rule: "Host(`eshop.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: aerofoil-k3s
+    headlamp-k3s:
+      rule: "Host(`headlamp.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: headlamp-k3s
+    tidsrapport-k3s:
+      rule: "Host(`tidrapport.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: tidsrapport-k3s
+    elitetube-k3s:
+      rule: "Host(`tube.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: elitetube-k3s
+    metube-k3s:
+      rule: "Host(`metube.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: metube-k3s
+    transmission-k3s:
+      rule: "Host(`torrent.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: transmission-k3s
+    prowlarr-k3s:
+      rule: "Host(`prowlarr.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: prowlarr-k3s
+    homedock:
+      rule: "Host(`homedock.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: homedock
+    watchyourlan:
+      rule: "Host(`watchyourlan.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: watchyourlan
+    it-tools:
+      rule: "Host(`it-tools.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: it-tools
+    grocy:
+      rule: "Host(`grocy.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: grocy
+    compose-toolbox:
+      rule: "Host(`compose-toolbox.mecloud.win`)"
+      entrypoints:
+        - https
+      tls:
+        certResolver: cloudflare
+      service: compose-toolbox
+
+  services:
+    homer-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.143:30880"
+    deluge-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.143:30112"
+    navidrome-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.143:30533"
+    aerofoil-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:30465"
+    headlamp-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.143:30466"
+    tidsrapport-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.143:30300"
+    elitetube-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:30301"
+    metube-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:30081"
+    transmission-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:30091"
+    prowlarr-k3s:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:30696"
+    homedock:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:13370"
+    watchyourlan:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:8840"
+    it-tools:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:2195"
+    grocy:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:9283"
+    compose-toolbox:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.156:6500"

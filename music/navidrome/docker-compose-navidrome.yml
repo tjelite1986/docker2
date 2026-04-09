@@ -4,7 +4,6 @@ services:
     image: deluan/navidrome:latest
     restart: unless-stopped
     networks:
-      - music
       - traefik
     ports:
       - 4533:4533
@@ -55,7 +54,5 @@ services:
       - "traefik.http.routers.navidrome-secure.middlewares=sslheader@docker"
 
 networks:
-  music:
-    external: true
   traefik:
     external: true

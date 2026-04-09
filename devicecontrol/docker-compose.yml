@@ -1,0 +1,34 @@
+services:
+  devicecontrol:
+    build:
+      context: /home/thomas/code/devicecontrol/backend
+      dockerfile: Dockerfile
+    container_name: devicecontrol
+    restart: unless-stopped
+    ports:
+      - "3500:3500"
+    networks:
+      - traefik
+    volumes:
+      - devicecontrol_data:/data
+    environment:
+      - PARENT_PIN=${PARENT_PIN:-1234}
+      - PORT=3500
+      - DATA_DIR=/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.devicecontrol-secure.rule=Host(`test.$DOMAIN`)"
+      - "traefik.http.routers.devicecontrol-secure.entrypoints=https"
+      - "traefik.http.routers.devicecontrol-secure.tls=true"
+      - "traefik.http.routers.devicecontrol-secure.tls.certresolver=cloudflare"
+      - "traefik.http.services.devicecontrol-service.loadbalancer.server.port=3500"
+      - "traefik.http.routers.devicecontrol-secure.middlewares=sslheader@docker"
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  devicecontrol_data:
+    name: devicecontrol_devicecontrol_data
+    external: true

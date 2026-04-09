@@ -14,6 +14,7 @@ services:
       - /dev/serial/by-id:/dev/serial/by-id
       - /mnt/media:/media
       - /run/dbus:/run/dbus:rw
+      - /etc/gai.conf:/etc/gai.conf:ro
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
       - /dev/ttyUSB1:/dev/ttyUSB1

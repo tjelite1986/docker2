@@ -4,8 +4,5 @@ include:
   - ./metube/docker-compose-metube.yml
 
 networks:
-  music:
-    name: music
-    driver: bridge
   traefik:
     external: true

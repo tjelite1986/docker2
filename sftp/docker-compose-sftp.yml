@@ -2,7 +2,7 @@ services:
   sftp:
     container_name: sftp
     build: .
-    restart: unless-stopped
+    restart: "no"  # Migrerad till k3s
     networks:
       - traefik
     ports:
@@ -24,7 +24,7 @@ services:
   samba:
     image: dperson/samba:latest
     container_name: samba
-    restart: unless-stopped
+    restart: "no"  # Migrerad till k3s
     networks:
       - traefik
     environment:
@@ -40,6 +40,8 @@ services:
       -s "Nintendo_Software;/mnt/nintendo/software;yes;no;no;${SFTP_USER}"
       -s "Dockdata;/mnt/dockdata;yes;no;no;${SFTP_USER}"
       -s "Appbuilds;/mnt/appbuilds;yes;no;no;${SFTP_USER}"
+      -s "Adults;/mnt/adults;yes;no;no;${SFTP_USER}"
+      -s "Tiktok;/mnt/TikTok;yes;no;no;${SFTP_USER}"
     volumes:
       - /home/thomas/docker2:/mnt/docker
       - /home/thomas/dockdata2:/mnt/dockdata
@@ -48,6 +50,8 @@ services:
       - /mnt/4tb/music/files:/mnt/music
       - /mnt/4tb/nintendo/games:/mnt/nintendo/games
       - /mnt/4tb/nintendo/software:/mnt/nintendo/software
+      - /mnt/4tb/adults:/mnt/adults
+      - /mnt/4tb/TikTok:/mnt/TikTok
       # Lägg till egna volymer här
 
 networks:

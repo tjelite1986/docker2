@@ -1,7 +1,7 @@
 include:
   - ./homeassistant/docker-compose-homeassistant.yml
-#  - ./musicassistant/docker-compose-musicassistant.yml
-#  - ./matterserver/docker-compose-matterserver.yml
+  - ./musicassistant/docker-compose-musicassistant.yml
+  - ./matterserver/docker-compose-matterserver.yml
 #  - ./mosquitto/docker-compose-mosquitto.yml
   - ./wyoming-faster-whisper/docker-compose-wyoming-faster-whisper.yml
   - ./wyoming-piper/docker-compose-wyoming-piper.yml

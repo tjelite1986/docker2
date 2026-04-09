@@ -4,7 +4,6 @@ services:
     image: lscr.io/linuxserver/lidarr:latest
     restart: unless-stopped
     networks:
-      - etc
       - traefik
     ports:
       - 8686:8686
@@ -28,7 +27,5 @@ services:
       - "traefik.http.routers.lidarr-secure.middlewares=sslheader@docker"
 
 networks:
-  etc:
-    external: true
   traefik:
     external: true

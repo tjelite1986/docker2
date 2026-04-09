@@ -7,7 +7,6 @@ services:
       booklore-db:
         condition: service_healthy
     networks:
-      - etc
       - traefik
     environment:
       - USER_ID=${PUID}
@@ -44,7 +43,7 @@ services:
     container_name: booklore-db
     restart: unless-stopped
     networks:
-      - etc
+      - traefik
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -62,7 +61,5 @@ services:
       retries: 10
 
 networks:
-  etc:
-    external: true
   traefik:
     external: true

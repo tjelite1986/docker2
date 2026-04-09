@@ -4,7 +4,6 @@ services:
     container_name: mosquitto
     restart: unless-stopped
     networks:
-      - smart_home
       - traefik
     ports:
       - "1883:1883"
@@ -16,8 +15,6 @@ services:
       - mosquitto_log:/mosquitto/log
 
 networks:
-  smart_home:
-    external: true
   traefik:
     external: true
 

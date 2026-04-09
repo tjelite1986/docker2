@@ -5,8 +5,5 @@ include:
   # - ./forsaljning/docker-compose-forsaljning.yml # ej public än
 
 networks:
-  claude_build:
-    name: claude_build
-    driver: bridge
   traefik:
     external: true

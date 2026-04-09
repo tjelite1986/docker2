@@ -5,13 +5,14 @@
 
 PROJECTS := traefik portainer sftp homer nintendo_switch smart-home music torrents etc claude_build networks
 
-.PHONY: help setup up down restart pull logs ps networks clean
+.PHONY: help setup validate up down restart pull logs ps networks clean
 
 help:
 	@echo ""
 	@echo "Tillgängliga kommandon:"
 	@echo ""
 	@echo "  make setup       – Kör bootstrap (nätverk, rättigheter, kataloger)"
+	@echo "  make validate    – Validera alla Docker Compose-filer (syntax + schema)"
 	@echo "  make up          – Starta alla stackar"
 	@echo "  make down        – Stoppa alla stackar"
 	@echo "  make restart     – Starta om alla stackar"
@@ -32,6 +33,29 @@ help:
 # -----------------------------------------------------------------------------
 setup:
 	@bash setup.sh
+
+# -----------------------------------------------------------------------------
+# Validering
+# -----------------------------------------------------------------------------
+validate:
+	@echo "Validerar Docker Compose-filer..."
+	@errors=0; \
+	for f in $$(find . -maxdepth 2 -name "docker-compose*.yml" | sort); do \
+		if docker compose -f "$$f" config > /dev/null 2>&1; then \
+			printf "  [OK]  $$f\n"; \
+		else \
+			printf "  [!!]  MISSLYCKADES: $$f\n"; \
+			docker compose -f "$$f" config 2>&1 | sed 's/^/         /'; \
+			errors=$$((errors + 1)); \
+		fi; \
+	done; \
+	if [ "$$errors" -gt 0 ]; then \
+		echo ""; \
+		echo "$$errors fil(er) misslyckades med validering."; \
+		exit 1; \
+	fi; \
+	echo ""; \
+	echo "Alla compose-filer är giltiga."
 
 # -----------------------------------------------------------------------------
 # Nätverk

@@ -5,13 +5,16 @@
 
 PROJECTS := traefik portainer sftp homer nintendo_switch smart-home music torrents etc claude_build networks
 
-.PHONY: help setup up down restart pull logs ps networks clean
+.PHONY: help setup validate lint test up down restart pull logs ps networks clean
 
 help:
 	@echo ""
 	@echo "Tillgängliga kommandon:"
 	@echo ""
 	@echo "  make setup       – Kör bootstrap (nätverk, rättigheter, kataloger)"
+	@echo "  make validate    – Validera alla Docker Compose-filer (syntax + schema)"
+	@echo "  make lint        – Kör ShellCheck på alla .sh-filer"
+	@echo "  make test        – Kör BATS-enhetstester för setup.sh"
 	@echo "  make up          – Starta alla stackar"
 	@echo "  make down        – Stoppa alla stackar"
 	@echo "  make restart     – Starta om alla stackar"
@@ -32,6 +35,56 @@ help:
 # -----------------------------------------------------------------------------
 setup:
 	@bash setup.sh
+
+# -----------------------------------------------------------------------------
+# Validering
+# -----------------------------------------------------------------------------
+validate:
+	@echo "Validerar Docker Compose-filer..."
+	@errors=0; \
+	for f in $$(find . -maxdepth 2 -name "docker-compose*.yml" | sort); do \
+		if docker compose -f "$$f" config > /dev/null 2>&1; then \
+			printf "  [OK]  $$f\n"; \
+		else \
+			printf "  [!!]  MISSLYCKADES: $$f\n"; \
+			docker compose -f "$$f" config 2>&1 | sed 's/^/         /'; \
+			errors=$$((errors + 1)); \
+		fi; \
+	done; \
+	if [ "$$errors" -gt 0 ]; then \
+		echo ""; \
+		echo "$$errors fil(er) misslyckades med validering."; \
+		exit 1; \
+	fi; \
+	echo ""; \
+	echo "Alla compose-filer är giltiga."
+
+# -----------------------------------------------------------------------------
+# Linting
+# -----------------------------------------------------------------------------
+lint:
+	@echo "Kör ShellCheck på .sh-filer..."
+	@if command -v shellcheck > /dev/null 2>&1; then \
+		shellcheck $$(find . -name "*.sh" | sort); \
+	else \
+		echo "  [info] shellcheck saknas lokalt, kör via Docker..."; \
+		docker run --rm -v "$(PWD):/mnt" koalaman/shellcheck:stable \
+			$$(find . -name "*.sh" | sort | sed 's|^\./|/mnt/|'); \
+	fi
+	@echo ""
+	@echo "ShellCheck klar – inga fel."
+
+# -----------------------------------------------------------------------------
+# BATS-tester
+# -----------------------------------------------------------------------------
+test:
+	@echo "Kör BATS-tester..."
+	@if command -v bats > /dev/null 2>&1; then \
+		bats tests/bats/; \
+	else \
+		echo "  [info] bats saknas lokalt, kör via Docker..."; \
+		docker run --rm -v "$(PWD):/code" bats/bats:latest /code/tests/bats/; \
+	fi
 
 # -----------------------------------------------------------------------------
 # Nätverk
@@ -55,7 +108,7 @@ networks:
 # -----------------------------------------------------------------------------
 up:
 	@echo "Startar traefik..."
-	@[ -f traefik/docker-compose.yml ] && docker compose -f traefik/docker-compose.yml up -d || true
+	@docker compose -f traefik/docker-compose-traefik.yml up -d
 	@for stack in $(filter-out traefik,$(PROJECTS)); do \
 		[ -f "$$stack/docker-compose.yml" ] || continue; \
 		echo "Startar $$stack..."; \

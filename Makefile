@@ -79,7 +79,7 @@ networks:
 # -----------------------------------------------------------------------------
 up:
 	@echo "Startar traefik..."
-	@[ -f traefik/docker-compose.yml ] && docker compose -f traefik/docker-compose.yml up -d || true
+	@docker compose -f traefik/docker-compose-traefik.yml up -d
 	@for stack in $(filter-out traefik,$(PROJECTS)); do \
 		[ -f "$$stack/docker-compose.yml" ] || continue; \
 		echo "Startar $$stack..."; \

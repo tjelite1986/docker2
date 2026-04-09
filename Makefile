@@ -3,7 +3,7 @@
 # Användning: make <target>  (kör från ~/docker2)
 # =============================================================================
 
-PROJECTS := traefik portainer sftp homer nintendo_switch smart-home music torrents etc claude_build networks
+PROJECTS := traefik portainer sftp homer nintendo_switch smart-home music torrents etc claude_build networks mcp
 
 .PHONY: help setup validate lint test up down restart pull logs ps networks clean
 

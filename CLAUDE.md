@@ -82,8 +82,8 @@ Globala variabler som återanvänds i alla stacks:
 | PUID | 1000 |
 | PGID | 1000 |
 | TZ | Europe/Stockholm |
-| DOMAIN | yourdomain.com |
-| DATADIR | /home/youruser/dockdata |
+| DOMAIN | mecloud.win |
+| DATADIR | /home/thomas/dockdata2 |
 
 ## Konventioner
 
@@ -109,10 +109,46 @@ labels:
 
 ## Servermiljö
 
-- **Host**: Raspberry Pi, arm64, Linux 6.8.0-raspi
-- **Host IP**: your-server-ip
+- **Host**: Raspberry Pi 5, arm64, Linux 6.8.0-raspi
+- **Host IP**: 192.168.0.143
 - **Node**: v18.19.1
 - **Docker**: v29.2.1 / docker compose v5.0.2
+
+## Git-workflow
+
+- Commita alltid direkt till `main`, inga PRs
+- Hook blockerar direkteditering på main — skapa alltid en feature-branch, committa, merga till main
+
+## k3s-status (2026-04-09)
+
+Klustret kör i produktion parallellt med Docker Traefik.
+
+| Nod | IP | Roll |
+|-----|----|------|
+| pi-master (Raspberry Pi) | 192.168.0.143 | control-plane |
+| pc-worker (Ubuntu PC) | 192.168.0.156 | worker |
+
+Pods på **pi-master**: homer, navidrome, tidsrapport, headlamp, sftp, samba
+Pods på **pc-worker**: aerofoil, metube, transmission, prowlarr, flaresolverr, elitetube
+
+Docker Traefik proxar till k3s NodePorts — config i `traefik/config.yml`.
+HA-stacken (homeassistant, mosquitto, musicassistant, matterserver, wyoming) kvarstår i Docker pga USB-passthrough + host network.
+
+## Aktiva tjänster
+
+| Tjänst | URL | Kör på |
+|--------|-----|--------|
+| homer | https://homer.mecloud.win | k3s/pi |
+| navidrome | https://navidrome.mecloud.win | k3s/pi |
+| tidsrapport | https://tidrapport.mecloud.win | k3s/pi |
+| headlamp | https://headlamp.mecloud.win | k3s/pi |
+| aerofoil | https://aerofoil.mecloud.win | k3s/pc |
+| metube | https://metube.mecloud.win | k3s/pc |
+| transmission | https://deluge.mecloud.win | k3s/pc |
+| elitetube | https://tube.mecloud.win | k3s/pc |
+| homeassistant | https://home.mecloud.win | Docker/pi |
+| traefik | intern | Docker/pi |
+| portainer | https://portainer.mecloud.win | Docker/pi |
 
 ---
 

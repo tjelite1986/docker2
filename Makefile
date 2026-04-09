@@ -5,7 +5,7 @@
 
 PROJECTS := traefik portainer sftp homer nintendo_switch smart-home music torrents etc claude_build networks
 
-.PHONY: help setup validate up down restart pull logs ps networks clean
+.PHONY: help setup validate lint up down restart pull logs ps networks clean
 
 help:
 	@echo ""
@@ -13,6 +13,7 @@ help:
 	@echo ""
 	@echo "  make setup       – Kör bootstrap (nätverk, rättigheter, kataloger)"
 	@echo "  make validate    – Validera alla Docker Compose-filer (syntax + schema)"
+	@echo "  make lint        – Kör ShellCheck på alla .sh-filer"
 	@echo "  make up          – Starta alla stackar"
 	@echo "  make down        – Stoppa alla stackar"
 	@echo "  make restart     – Starta om alla stackar"
@@ -56,6 +57,21 @@ validate:
 	fi; \
 	echo ""; \
 	echo "Alla compose-filer är giltiga."
+
+# -----------------------------------------------------------------------------
+# Linting
+# -----------------------------------------------------------------------------
+lint:
+	@echo "Kör ShellCheck på .sh-filer..."
+	@if command -v shellcheck > /dev/null 2>&1; then \
+		shellcheck $$(find . -name "*.sh" | sort); \
+	else \
+		echo "  [info] shellcheck saknas lokalt, kör via Docker..."; \
+		docker run --rm -v "$(PWD):/mnt" koalaman/shellcheck:stable \
+			$$(find . -name "*.sh" | sort | sed 's|^\./|/mnt/|'); \
+	fi
+	@echo ""
+	@echo "ShellCheck klar – inga fel."
 
 # -----------------------------------------------------------------------------
 # Nätverk
